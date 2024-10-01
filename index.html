@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAM Stack - Backend Framework</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/2.3.0/alpine.js" defer></script>
+
+</head>
+<body>
+    <h1>User Form</h1>
+    <form id="userForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required>
+        <br>
+        <label for="number">Number:</label>
+        <input type="text" id="number" required>
+        <br>
+        <button type="submit">Add User</button>
+    </form>
+
+    <button id="fetchUsers">Fetch Users</button>
+    <h2>Users:</h2>
+    <ul id="userList"></ul>
+
+    <script>
+        document.getElementById('userForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const number = document.getElementById('number').value;
+
+            // Send data to the server
+            fetch('http://localhost:3000/addUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, number })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('User added:', data);
+                document.getElementById('userForm').reset(); // Reset form
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('fetchUsers').addEventListener('click', function() {
+            // Fetch users from the server
+            fetch('http://localhost:3000/users')
+                .then(response => response.json())
+                .then(users => {
+                    const userList = document.getElementById('userList');
+                    userList.innerHTML = ''; // Clear previous entries
+                    users.forEach(user => {
+                        const li = document.createElement('li');
+                        li.textContent = `Name: ${user.name}, Number: ${user.number}`;
+                        userList.appendChild(li);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
